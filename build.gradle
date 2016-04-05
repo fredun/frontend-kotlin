@@ -1,0 +1,33 @@
+group 'com.fredun.frontend'
+version '0.0.1-SNAPSHOT'
+
+buildscript {
+	ext {
+		versionKotlin = '1.0.1-2'
+		versionAntlr = '4.5.3'
+	}
+	repositories {
+		mavenCentral()
+	}
+	dependencies {
+		classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$versionKotlin"
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+apply plugin: 'kotlin'
+apply plugin: 'antlr'
+
+dependencies {
+	compile "org.jetbrains.kotlin:kotlin-stdlib:$versionKotlin"
+
+	antlr "org.antlr:antlr4:$versionAntlr"
+	compile "org.antlr:antlr4-runtime:$versionAntlr"
+}
+
+compileKotlin.dependsOn generateGrammarSource
+compileTestKotlin.dependsOn generateTestGrammarSource
+
