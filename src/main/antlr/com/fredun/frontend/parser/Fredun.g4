@@ -4,9 +4,9 @@ grammar Fredun;
 package com.fredun.frontend.parser;
 }
 
-start: (NEWLINE | (defs NEWLINE))* ;
+start: (NEWLINE | defs)* ;
 
-defs: letDef | structDef | tupleDef ;
+defs: (letDef | structDef | tupleDef) NEWLINE+ ;
 letDef: 'let' varName '=' expr ;
 
 structDef: 'struct' type NEWLINE? struct ;
@@ -34,15 +34,20 @@ expr: block | '(' expr ')'
     | expr AND expr                        // andExpr
     | expr OR expr                         // orExpr
     | '(' argList ')' (':' type)? '=>' expr
+    | RETURN expr                          // return
     | constant=(CHAR | QUOTED_STRING) | number | LOWERCASE_ID ;
 
-block: '{' expr* '}' ;
+block: '{' blockStatement* '}' NEWLINE+ ;
+
+blockStatement: (defs | (expr NEWLINE+)) ;
 
 argList: arg (COMMA_AND_NL arg)* ;
 arg: varName ':' type ;
 type: UPPERCASE_ID ; /*typeKind? ;
 typeKind: '[' type ']' ; */
 
+ifSingle: 'if' expr 'then' expr 'else' expr ;
+ifMulti: 'if' expr block ('else' block) ;
 // Lexing
 
 COMMA_AND_NL: COMMA NEWLINE* ;
@@ -60,9 +65,11 @@ GTEQ: '>=';
 LT: '<';
 GT: '>';
 EQ: '==';
-NEQ: '!==';
+NEQ: '!=';
 AND: '&';
 OR: '|';
+
+RETURN: 'return' ;
 
 fragment ESCAPED_QUOTE: '\\"';
 fragment ESCAPED_SINGLE_QUOTE: '\\\'' ;

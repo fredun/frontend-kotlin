@@ -5,6 +5,7 @@ buildscript {
 	ext {
 		versionKotlin = '1.0.1-2'
 		versionAntlr = '4.5.3'
+		versionJUnit = '4.12'
 	}
 	repositories {
 		mavenCentral()
@@ -26,6 +27,7 @@ dependencies {
 
 	antlr "org.antlr:antlr4:$versionAntlr"
 	compile "org.antlr:antlr4-runtime:$versionAntlr"
+	testCompile "junit:junit:$versionJUnit"
 }
 
 compileKotlin.dependsOn generateGrammarSource
