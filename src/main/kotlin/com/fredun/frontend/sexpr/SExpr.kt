@@ -52,7 +52,7 @@ abstract class SExpr {
 		val valuesOther = getExportedFields(this.javaClass, other, emptyList())
 
 		for (j in 0..valuesThis.size - 1) {
-			if (!Objects.equals(valuesThis[j], valuesOther[j])) {
+			if (!Objects.deepEquals(valuesThis[j], valuesOther[j])) {
 				return false
 			}
 		}
@@ -114,8 +114,8 @@ class SExprConstantString(val value: String) : SExprConstant()
 
 @SExprSerialize(name = "abstraction", fields = arrayOf("values"))
 class SExprAbstraction(vararg val values: SExprExpr) : SExprExpr()
-@SExprSerialize(name = "application", fields = arrayOf("name", "args"))
-class SExprApplication(val name: String, vararg val args: SExprExpr) : SExprExpr()
+@SExprSerialize(name = "application", fields = arrayOf("expr", "args"))
+class SExprApplication(val expr: SExprExpr, vararg val args: SExprExpr) : SExprExpr()
 
 @SExprSerialize(name = "operation", fields = arrayOf())
 abstract class SExprOperation() : SExprExpr()

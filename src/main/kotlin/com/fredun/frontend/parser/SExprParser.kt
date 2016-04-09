@@ -1,6 +1,7 @@
 package com.fredun.frontend.parser
 
 import com.fredun.frontend.sexpr.SExpr
+import com.fredun.frontend.sexpr.SExprApplication
 import com.fredun.frontend.sexpr.SExprConstant
 import com.fredun.frontend.sexpr.SExprConstantChar
 import com.fredun.frontend.sexpr.SExprConstantFloat
@@ -8,6 +9,7 @@ import com.fredun.frontend.sexpr.SExprConstantInt
 import com.fredun.frontend.sexpr.SExprConstantString
 import com.fredun.frontend.sexpr.SExprExpr
 import com.fredun.frontend.sexpr.SExprLet
+import com.fredun.frontend.sexpr.SExprVariable
 import org.antlr.v4.runtime.ANTLRInputStream
 import org.antlr.v4.runtime.CommonTokenStream
 import java.io.File
@@ -50,11 +52,17 @@ object SExprParser {
 
 	private fun toSExpr(expr: FredunParser.ExprContext): SExprExpr {
 		return when (expr) {
+			is FredunParser.IdExprContext -> toSExpr(expr)
 			is FredunParser.NumberExprContext -> toSExpr(expr)
 			is FredunParser.CharExprContext -> toSExpr(expr)
 			is FredunParser.StringExprContext -> toSExpr(expr)
-			else -> throw UnsupportedOperationException()
+			is FredunParser.FuncApplicationExprContext -> toSExpr(expr)
+			else -> throw UnsupportedOperationException(expr.javaClass.canonicalName)
 		}
+	}
+
+	private fun toSExpr(expr: FredunParser.IdExprContext): SExprVariable {
+		return SExprVariable(expr.text)  // FIXME: This is wrong when the character is a unicode escape code or any other multi-character char
 	}
 
 	private fun toSExpr(expr: FredunParser.NumberExprContext): SExprConstant {
@@ -73,5 +81,12 @@ object SExprParser {
 	private fun toSExpr(expr: FredunParser.StringExprContext): SExprConstantString {
 		val text = expr.text
 		return SExprConstantString(text.substring(1, text.length - 1))
+	}
+
+	private fun toSExpr(expr: FredunParser.FuncApplicationExprContext): SExprApplication {
+		val exprs = expr.expr()
+		val func = exprs[0]
+		val args = exprs.drop(1).map { toSExpr(it) }
+		return SExprApplication(toSExpr(func), *args.toTypedArray())
 	}
 }

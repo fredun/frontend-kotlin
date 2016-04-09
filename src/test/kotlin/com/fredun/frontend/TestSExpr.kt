@@ -65,8 +65,8 @@ class TestSExpr {
 
 	@Test
 	fun testApplication() {
-		SExprApplication("myFunc", SExprVariable("lucas"), SExprConstantString("Oeoe")).apply {
-			assertEquals("(application \"myFunc\" (variable \"lucas\") (constant (string \"Oeoe\")))", this.toString())
+		SExprApplication(SExprVariable("myFunc"), SExprVariable("lucas"), SExprConstantString("Oeoe")).apply {
+			assertEquals("(application (variable \"myFunc\") (variable \"lucas\") (constant (string \"Oeoe\")))", this.toString())
 		}
 	}
 

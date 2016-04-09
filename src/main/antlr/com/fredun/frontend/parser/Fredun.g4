@@ -13,7 +13,7 @@ letDef: 'let' varName '=' expr ;
 
 structDef: 'struct' type NEWLINE? struct ;
 tupleDef: 'type' type '=' tuple ;
-struct: '{' NEWLINE* argList /*(COMMA_AND_NL spread)?*/ NEWLINE? '}' ;
+struct: '{' NEWLINE* argDefList /*(COMMA_AND_NL spread)?*/ NEWLINE? '}' ;
 tuple: '(' typeList ')' ;
 
 //spread: '...' varName ;
@@ -29,6 +29,7 @@ number:
 varName: LOWERCASE_ID;
 
 expr: block                                 # blockExpr
+    | expr '(' (expr (COMMA expr)*)? ')'    # funcApplicationExpr
     | '(' expr ')'                          # groupExpr
     | expr '.' LOWERCASE_ID                 # dotExpr
     | <assoc=right> expr POW expr           # powExpr
@@ -40,7 +41,7 @@ expr: block                                 # blockExpr
     | expr op=(EQ | NEQ) expr               # equalityExpr
     | expr AND expr                         # andExpr
     | expr OR expr                          # orExpr
-    | '(' argList ')' (':' type)? '=>' expr # funcExpr
+    | '(' argDefList ')' (':' type)? '=>' expr # funcAbstractionExpr
     | RETURN expr                           # returnExpr
     | number                                # numberExpr
     | CHAR                                  # charExpr
@@ -52,18 +53,19 @@ block: '{' blockStatement* '}' NEWLINE+ ;
 
 blockStatement: (defs | (expr NEWLINE+)) ;
 
-argList: arg (COMMA_AND_NL arg)* ;
-arg: varName ':' type ;
+argDefList: argDef (COMMA_AND_NL argDef)* ;
+argDef: varName ':' type ;
 type: UPPERCASE_ID ; /*typeKind? ;
 typeKind: '[' type ']' ; */
 
 ifSingle: 'if' expr 'then' expr 'else' expr ;
 ifMulti: 'if' expr block ('else' block) ;
+
 // Lexing
 
-COMMA_AND_NL: COMMA NEWLINE* ;
-
 COMMA: ',' ;
+
+COMMA_AND_NL: COMMA NEWLINE* ;
 POW: '^';
 MINUS: '-';
 NOT: '!';
@@ -95,7 +97,7 @@ UNSIGNED_HEX: '0x' HEX+ SUFFIX_INT? ;
 
 UNSIGNED_FLOAT: (([0-9]+ '.' [0-9]* Exponent?) | ('.' [0-9]+ Exponent?) | ([0-9]+ Exponent)) SUFFIX_FLOAT? ;
 
-SUFFIX_INT: [su] ('8'|'16'|'32'|'64') ;
+SUFFIX_INT: [iu] ('8'|'16'|'32'|'64') ;
 SUFFIX_FLOAT: 'f' ('32'|'64') ;
 
 fragment
