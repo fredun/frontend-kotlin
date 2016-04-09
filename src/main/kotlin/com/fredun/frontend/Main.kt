@@ -15,7 +15,10 @@ fun main(args: Array<String>) {
 	}
 
 	val sexprs = SExprParser.parse(file)
-	println("(")
+
+	println(sexprs[0])
+	// FIXME: Reenable when backend can accept multiple lines
+	/*println("(")
 	sexprs.forEach { println("\t$it") }
-	println(")")
+	println(")")*/
 }
