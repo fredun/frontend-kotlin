@@ -24,6 +24,7 @@ apply plugin: 'antlr'
 
 dependencies {
 	compile "org.jetbrains.kotlin:kotlin-stdlib:$versionKotlin"
+	compile "org.jetbrains.kotlin:kotlin-reflect:$versionKotlin"
 
 	antlr "org.antlr:antlr4:$versionAntlr"
 	compile "org.antlr:antlr4-runtime:$versionAntlr"
