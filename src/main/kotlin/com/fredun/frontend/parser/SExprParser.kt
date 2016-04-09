@@ -7,6 +7,7 @@ import com.fredun.frontend.sexpr.SExprConstantChar
 import com.fredun.frontend.sexpr.SExprConstantFloat
 import com.fredun.frontend.sexpr.SExprConstantInt
 import com.fredun.frontend.sexpr.SExprConstantString
+import com.fredun.frontend.sexpr.SExprConstantUnsigned
 import com.fredun.frontend.sexpr.SExprExpr
 import com.fredun.frontend.sexpr.SExprFloatBits
 import com.fredun.frontend.sexpr.SExprIntegerBits
@@ -64,15 +65,42 @@ object SExprParser {
 	}
 
 	private fun toSExpr(expr: FredunParser.IdExprContext): SExprVariable {
-		return SExprVariable(expr.text)  // FIXME: This is wrong when the character is a unicode escape code or any other multi-character char
+		return SExprVariable(expr.text)
 	}
 
 	private fun toSExpr(expr: FredunParser.NumberExprContext): SExprConstant {
 		// FIXME: Parse suffixes
 		val number = expr.number()
+		val text = number.text
 		return when (number) {
-			is FredunParser.IntNumberContext, is FredunParser.HexNumberContext -> SExprConstantInt(java.lang.Long.valueOf(number.text), SExprIntegerBits.I32)
-			is FredunParser.FloatNumberContext -> SExprConstantFloat(java.lang.Double.valueOf(number.text), SExprFloatBits.F32)
+			is FredunParser.IntNumberContext, is FredunParser.HexNumberContext -> {
+				// FIXME: This needs to be improved on the grammar itself
+				val signAndBits = when {
+					text.endsWith("i8") -> false to SExprIntegerBits.I8
+					text.endsWith("i16") -> false to SExprIntegerBits.I16
+					text.endsWith("i32") -> false to SExprIntegerBits.I32
+					text.endsWith("i64") -> false to SExprIntegerBits.I64
+					text.endsWith("u8") -> true to SExprIntegerBits.I8
+					text.endsWith("u16") -> true to SExprIntegerBits.I16
+					text.endsWith("u32") -> true to SExprIntegerBits.I32
+					text.endsWith("u64") -> true to SExprIntegerBits.I64
+					else -> false to SExprIntegerBits.I32
+				}
+				if (signAndBits.first) {
+					SExprConstantUnsigned(java.lang.Long.valueOf(text), signAndBits.second)
+				} else {
+					SExprConstantInt(java.lang.Long.valueOf(text), signAndBits.second)
+				}
+			}
+			is FredunParser.FloatNumberContext -> {
+				// FIXME: This needs to be improved on the grammar itself
+				val bits = when {
+					text.endsWith("f32") -> SExprFloatBits.F32
+					text.endsWith("f64") -> SExprFloatBits.F64
+					else -> SExprFloatBits.F32
+				}
+				SExprConstantFloat(java.lang.Double.valueOf(number.text), bits)
+			}
 			else -> throw UnsupportedOperationException()
 		}
 	}

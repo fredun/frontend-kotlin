@@ -7,6 +7,7 @@ import com.fredun.frontend.sexpr.SExprConstantChar
 import com.fredun.frontend.sexpr.SExprConstantFloat
 import com.fredun.frontend.sexpr.SExprConstantInt
 import com.fredun.frontend.sexpr.SExprConstantString
+import com.fredun.frontend.sexpr.SExprConstantUnsigned
 import com.fredun.frontend.sexpr.SExprFloatBits
 import com.fredun.frontend.sexpr.SExprIntegerBits
 import com.fredun.frontend.sexpr.SExprLet
@@ -48,6 +49,18 @@ class TestSExpr {
 		}
 		SExprConstantString("Everything is AWESOME!").apply {
 			assertEquals("(constant (string \"Everything is AWESOME!\"))", this.toString())
+		}
+	}
+	@Test
+	fun testNumericSuffixes() {
+		SExprConstantInt(42, SExprIntegerBits.I8).apply {
+			assertEquals("(constant (numeric (integer 8 42)))", this.toString())
+		}
+		SExprConstantUnsigned(42, SExprIntegerBits.I64).apply {
+			assertEquals("(constant (numeric (unsigned 64 42)))", this.toString())
+		}
+		SExprConstantFloat(42.0, SExprFloatBits.F64).apply {
+			assertEquals("(constant (numeric (float 64 42.0)))", this.toString())
 		}
 	}
 
