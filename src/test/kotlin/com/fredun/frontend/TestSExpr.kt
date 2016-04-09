@@ -89,4 +89,12 @@ class TestSExpr {
 			assertEquals("(type (constant (numeric 42)))", this.toString())
 		}
 	}
+
+	@Test
+	fun testEquals() {
+		assertEquals(
+				SExprOperationBinary("+", SExprConstantNumber(42), SExprConstantString("Universe")),
+				SExprOperationBinary("+", SExprConstantNumber(42), SExprConstantString("Universe"))
+		)
+	}
 }

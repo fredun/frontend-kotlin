@@ -1,26 +1,21 @@
 package com.fredun.frontend.sexpr
 
+import java.util.*
+
 abstract class SExpr {
 	override fun toString(): String {
 		return gen(this.javaClass, "")
 	}
 
-	private fun gen(clazz: Class<*>, childStr:String): String {
+	private fun gen(clazz: Class<*>, childStr: String): String {
 		val annotation = clazz.getDeclaredAnnotation(SExprSerialize::class.java) ?: return childStr
 
 		val sb = StringBuilder()
 		sb.append('(').append(annotation.name).append(' ')
 
 		val fieldValues = mutableListOf<String>()
-		for (fieldName in annotation.fields) {
-			val field = clazz.getDeclaredField(fieldName)
-			val oldAccessibility = field.isAccessible
-			field.isAccessible = true
-			val value = field.get(this)
-			field.isAccessible = oldAccessibility
+		mapFields(clazz, this, annotation.fields) { value -> fieldValues.add(parseValueAsString(value)) }
 
-			fieldValues.add(parseValueAsString(value))
-		}
 		if (childStr.isNotBlank()) {
 			fieldValues.add(childStr)
 		}
@@ -34,7 +29,7 @@ abstract class SExpr {
 		}
 	}
 
-	private fun parseValueAsString(value: Any):String {
+	private fun parseValueAsString(value: Any): String {
 		val javaClass = value.javaClass
 		return when (javaClass) {
 			String::class.java, java.lang.String::class.java -> "\"$value\""
@@ -46,6 +41,51 @@ abstract class SExpr {
 					value.toString()
 				}
 			}
+		}
+	}
+
+	override fun equals(other: Any?): Boolean {
+		if (other == null) return false
+		if (javaClass != other.javaClass) return false
+
+		val valuesThis = getExportedFields(this.javaClass, this, emptyList())
+		val valuesOther = getExportedFields(this.javaClass, other, emptyList())
+
+		for (j in 0..valuesThis.size - 1) {
+			if (!Objects.equals(valuesThis[j], valuesOther[j])) {
+				return false
+			}
+		}
+		return true
+	}
+
+	override fun hashCode(): Int {
+		val values = getExportedFields(this.javaClass, this, emptyList())
+		return Objects.hash(*values)
+	}
+
+	private fun getExportedFields(clazz: Class<*>, instance: Any, childFields: List<Any>): Array<Any> {
+		if (clazz == Any::class.java) {
+			return childFields.toTypedArray()
+		}
+
+		val annotation = clazz.getDeclaredAnnotation(SExprSerialize::class.java) ?: return getExportedFields(clazz.superclass, instance, childFields)
+		val myFields = mutableListOf<Any>()
+		myFields.addAll(childFields)
+		mapFields(clazz, instance, annotation.fields) { myFields.add(it) }
+
+		return getExportedFields(clazz.superclass, instance, myFields)
+	}
+
+	private fun mapFields(clazz: Class<*>, instance: Any, fields: Array<String>, callback: (value: Any) -> Unit) {
+		for (fieldName in fields) {
+			val field = clazz.getDeclaredField(fieldName)
+			val oldAccessibility = field.isAccessible
+			field.isAccessible = true
+			val value = field.get(instance)
+			field.isAccessible = oldAccessibility
+
+			callback(value)
 		}
 	}
 }
