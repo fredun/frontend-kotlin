@@ -2,20 +2,18 @@ package com.fredun.frontend.sexpr
 
 abstract class SExpr {
 	override fun toString(): String {
-		val javaClass = this.javaClass
-
-		return gen(javaClass, "")
+		return gen(this.javaClass, "")
 	}
 
-	private fun gen(javaClass: Class<*>, childStr:String): String {
-		val annotation = javaClass.getDeclaredAnnotation(SExprSerialize::class.java) ?: return childStr
+	private fun gen(clazz: Class<*>, childStr:String): String {
+		val annotation = clazz.getDeclaredAnnotation(SExprSerialize::class.java) ?: return childStr
 
 		val sb = StringBuilder()
 		sb.append('(').append(annotation.name).append(' ')
 
 		val fieldValues = mutableListOf<String>()
 		for (fieldName in annotation.fields) {
-			val field = javaClass.getDeclaredField(fieldName)
+			val field = clazz.getDeclaredField(fieldName)
 			val oldAccessibility = field.isAccessible
 			field.isAccessible = true
 			val value = field.get(this)
@@ -29,8 +27,8 @@ abstract class SExpr {
 		sb.append(fieldValues.joinToString(" ")).append(')')
 
 		val result = sb.toString()
-		if (javaClass != Any::class.java) {
-			return gen(javaClass.superclass, result)
+		if (clazz != Any::class.java) {
+			return gen(clazz.superclass, result)
 		} else {
 			return result
 		}
