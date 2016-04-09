@@ -7,6 +7,8 @@ import com.fredun.frontend.sexpr.SExprConstantChar
 import com.fredun.frontend.sexpr.SExprConstantFloat
 import com.fredun.frontend.sexpr.SExprConstantInt
 import com.fredun.frontend.sexpr.SExprConstantString
+import com.fredun.frontend.sexpr.SExprFloatBits
+import com.fredun.frontend.sexpr.SExprIntegerBits
 import com.fredun.frontend.sexpr.SExprLet
 import com.fredun.frontend.sexpr.SExprOperationBinary
 import com.fredun.frontend.sexpr.SExprOperationUnary
@@ -26,17 +28,17 @@ class TestSExpr {
 
 	@Test
 	fun testConstant() {
-		SExprConstantInt(42).apply {
-			assertEquals("(constant (numeric 42))", this.toString())
+		SExprConstantInt(42, SExprIntegerBits.I32).apply {
+			assertEquals("(constant (numeric (integer 32 42)))", this.toString())
 		}
-		SExprConstantFloat(42.0).apply {
-			assertEquals("(constant (numeric 42.0))", this.toString())
+		SExprConstantFloat(42.0, SExprFloatBits.F32).apply {
+			assertEquals("(constant (numeric (float 32 42.0)))", this.toString())
 		}
-		SExprConstantFloat(42.6659).apply {
-			assertEquals("(constant (numeric 42.6659))", this.toString())
+		SExprConstantFloat(42.6659, SExprFloatBits.F32).apply {
+			assertEquals("(constant (numeric (float 32 42.6659)))", this.toString())
 		}
-		SExprConstantFloat(42e14).apply {
-			assertEquals("(constant (numeric 4.2E15))", this.toString())
+		SExprConstantFloat(42e14, SExprFloatBits.F64).apply {
+			assertEquals("(constant (numeric (float 64 4.2E15)))", this.toString())
 		}
 		SExprConstantChar('X').apply {
 			assertEquals("(constant (char 'X'))", this.toString())
@@ -72,33 +74,33 @@ class TestSExpr {
 
 	@Test
 	fun testOperations() {
-		SExprOperationBinary("+", SExprConstantInt(42), SExprConstantString("Universe")).apply {
-			assertEquals("(operation (binary \"+\" (constant (numeric 42)) (constant (string \"Universe\"))))", this.toString())
+		SExprOperationBinary("+", SExprConstantInt(42, SExprIntegerBits.I32), SExprConstantString("Universe")).apply {
+			assertEquals("(operation (binary \"+\" (constant (numeric (integer 32 42))) (constant (string \"Universe\"))))", this.toString())
 		}
-		SExprOperationUnary("-", SExprConstantInt(42)).apply {
-			assertEquals("(operation (unary \"-\" (constant (numeric 42))))", this.toString())
+		SExprOperationUnary("-", SExprConstantInt(42, SExprIntegerBits.I32)).apply {
+			assertEquals("(operation (unary \"-\" (constant (numeric (integer 32 42)))))", this.toString())
 		}
 	}
 
 	@Test
 	fun testTuple() {
-		SExprTuple(SExprConstantInt(42), SExprConstantString("Universe")).apply {
-			assertEquals("(tuple (constant (numeric 42)) (constant (string \"Universe\")))", this.toString())
+		SExprTuple(SExprConstantInt(42, SExprIntegerBits.I32), SExprConstantString("Universe")).apply {
+			assertEquals("(tuple (constant (numeric (integer 32 42))) (constant (string \"Universe\")))", this.toString())
 		}
 	}
 
 	@Test
 	fun testType() {
-		SExprType(SExprConstantInt(42)).apply {
-			assertEquals("(type (constant (numeric 42)))", this.toString())
+		SExprType(SExprConstantInt(42, SExprIntegerBits.I32)).apply {
+			assertEquals("(type (constant (numeric (integer 32 42))))", this.toString())
 		}
 	}
 
 	@Test
 	fun testEquals() {
 		assertEquals(
-				SExprOperationBinary("+", SExprConstantInt(42), SExprConstantString("Universe")),
-				SExprOperationBinary("+", SExprConstantInt(42), SExprConstantString("Universe"))
+				SExprOperationBinary("+", SExprConstantInt(42, SExprIntegerBits.I32), SExprConstantString("Universe")),
+				SExprOperationBinary("+", SExprConstantInt(42, SExprIntegerBits.I32), SExprConstantString("Universe"))
 		)
 	}
 }

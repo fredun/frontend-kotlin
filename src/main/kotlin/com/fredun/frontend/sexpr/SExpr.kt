@@ -90,6 +90,18 @@ abstract class SExpr {
 	}
 }
 
+enum class SExprFloatBits(val str: kotlin.String) {
+	F32("32"), F64("64");
+
+	override fun toString() = str
+}
+
+enum class SExprIntegerBits(val str: kotlin.String) {
+	I8("8"), I16("16"), I32("32"), I64("64");
+
+	override fun toString() = str
+}
+
 @SExprSerialize(name = "let", fields = arrayOf("name", "expr"))
 class SExprLet(val name: String, val expr: SExprExpr) : SExpr()
 
@@ -100,11 +112,15 @@ class SExprVariable(val value: String) : SExprExpr()
 
 @SExprSerialize(name = "constant", fields = arrayOf())
 abstract class SExprConstant : SExprExpr()
+@SExprSerialize(name = "numeric", fields = arrayOf())
+abstract class SExprConstantNumeric() : SExprConstant()
 
-@SExprSerialize(name = "numeric", fields = arrayOf("value"))
-class SExprConstantInt(val value: Long) : SExprConstant()
-@SExprSerialize(name = "numeric", fields = arrayOf("value"))
-class SExprConstantFloat(val value: Double) : SExprConstant()
+@SExprSerialize(name = "integer", fields = arrayOf("bits", "value"))
+class SExprConstantInt(val value: Long, val bits: SExprIntegerBits) : SExprConstantNumeric()
+@SExprSerialize(name = "unsigned", fields = arrayOf("bits", "value"))
+class SExprConstantUnsigned(val value: Long, val bits: SExprIntegerBits) : SExprConstantNumeric()
+@SExprSerialize(name = "float", fields = arrayOf("bits", "value"))
+class SExprConstantFloat(val value: Double, val bits: SExprFloatBits) : SExprConstantNumeric()
 @SExprSerialize(name = "char", fields = arrayOf("value"))
 class SExprConstantChar(val value: Char) : SExprConstant()
 @SExprSerialize(name = "boolean", fields = arrayOf("value"))

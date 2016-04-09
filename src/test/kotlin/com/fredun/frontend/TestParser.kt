@@ -5,6 +5,8 @@ import com.fredun.frontend.sexpr.SExprApplication
 import com.fredun.frontend.sexpr.SExprConstantFloat
 import com.fredun.frontend.sexpr.SExprConstantInt
 import com.fredun.frontend.sexpr.SExprConstantString
+import com.fredun.frontend.sexpr.SExprFloatBits
+import com.fredun.frontend.sexpr.SExprIntegerBits
 import com.fredun.frontend.sexpr.SExprLet
 import com.fredun.frontend.sexpr.SExprVariable
 import org.junit.Assert.assertArrayEquals
@@ -15,7 +17,7 @@ class TestParser {
 	@Test
 	@Ignore     // FIXME: Remove when backend can parse defs
 	fun testLet() {
-		val expected = arrayOf(SExprLet("myThing", SExprConstantInt(42)))
+		val expected = arrayOf(SExprLet("myThing", SExprConstantInt(42, SExprIntegerBits.I32)))
 		val result = SExprParser.parse("let myThing = 42\n")
 
 		assertArrayEquals(expected, result.toTypedArray())
@@ -26,7 +28,7 @@ class TestParser {
 	fun testMultipleLet() {
 		val expected = arrayOf(
 				SExprLet("myThing", SExprConstantString("Oeoe")),
-				SExprLet("myOtherThing", SExprConstantInt(42))
+				SExprLet("myOtherThing", SExprConstantInt(42, SExprIntegerBits.I32))
 		)
 		val result = SExprParser.parse("let myThing = \"Oeoe\"\nlet myOtherThing = 42\n")
 
@@ -47,7 +49,7 @@ class TestParser {
 		run {
 			// FIXME: This needs to be wrapped in a `def` after we add them back
 			val expected = arrayOf(
-					SExprApplication(SExprVariable("myFunc"), SExprConstantInt(42))
+					SExprApplication(SExprVariable("myFunc"), SExprConstantInt(42, SExprIntegerBits.I32))
 			)
 			val result = SExprParser.parse("myFunc(42)")
 
@@ -56,7 +58,7 @@ class TestParser {
 		run {
 			// FIXME: This needs to be wrapped in a `def` after we add them back
 			val expected = arrayOf(
-					SExprApplication(SExprVariable("myFunc"), SExprConstantString("Sparta!"), SExprConstantFloat(42.42))
+					SExprApplication(SExprVariable("myFunc"), SExprConstantString("Sparta!"), SExprConstantFloat(42.42, SExprFloatBits.F32))
 			)
 			val result = SExprParser.parse("myFunc(\"Sparta!\", 42.42)")
 

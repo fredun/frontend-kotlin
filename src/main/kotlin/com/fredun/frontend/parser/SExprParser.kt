@@ -8,6 +8,8 @@ import com.fredun.frontend.sexpr.SExprConstantFloat
 import com.fredun.frontend.sexpr.SExprConstantInt
 import com.fredun.frontend.sexpr.SExprConstantString
 import com.fredun.frontend.sexpr.SExprExpr
+import com.fredun.frontend.sexpr.SExprFloatBits
+import com.fredun.frontend.sexpr.SExprIntegerBits
 import com.fredun.frontend.sexpr.SExprLet
 import com.fredun.frontend.sexpr.SExprVariable
 import org.antlr.v4.runtime.ANTLRInputStream
@@ -66,10 +68,11 @@ object SExprParser {
 	}
 
 	private fun toSExpr(expr: FredunParser.NumberExprContext): SExprConstant {
+		// FIXME: Parse suffixes
 		val number = expr.number()
 		return when (number) {
-			is FredunParser.IntNumberContext, is FredunParser.HexNumberContext -> SExprConstantInt(java.lang.Long.valueOf(number.text))
-			is FredunParser.FloatNumberContext -> SExprConstantFloat(java.lang.Double.valueOf(number.text))
+			is FredunParser.IntNumberContext, is FredunParser.HexNumberContext -> SExprConstantInt(java.lang.Long.valueOf(number.text), SExprIntegerBits.I32)
+			is FredunParser.FloatNumberContext -> SExprConstantFloat(java.lang.Double.valueOf(number.text), SExprFloatBits.F32)
 			else -> throw UnsupportedOperationException()
 		}
 	}
