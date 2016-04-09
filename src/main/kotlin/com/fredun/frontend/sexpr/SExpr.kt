@@ -114,8 +114,8 @@ class SExprConstantString(val value: String) : SExprConstant()
 
 @SExprSerialize(name = "abstraction", fields = arrayOf("values"))
 class SExprAbstraction(vararg val values: SExprExpr) : SExprExpr()
-@SExprSerialize(name = "application", fields = arrayOf("values"))
-class SExprApplication(vararg val values: SExprExpr) : SExprExpr()
+@SExprSerialize(name = "application", fields = arrayOf("name", "args"))
+class SExprApplication(val name: String, vararg val args: SExprExpr) : SExprExpr()
 
 @SExprSerialize(name = "operation", fields = arrayOf())
 abstract class SExprOperation() : SExprExpr()
