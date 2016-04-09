@@ -1,39 +1,21 @@
 package com.fredun.frontend
 
-import com.fredun.frontend.parser.FredunLexer
-import com.fredun.frontend.parser.FredunParser
-import org.antlr.v4.runtime.ANTLRInputStream
-import org.antlr.v4.runtime.CommonTokenStream
-import org.antlr.v4.runtime.ParserRuleContext
-import org.antlr.v4.runtime.tree.*
+import com.fredun.frontend.parser.SExprParser
+import java.io.File
 
 fun main(args: Array<String>) {
-	val input = """
-    let x = 555u16 * 4444u32
-    let y = 222u64 * 3333u8
-    """
-	val lexer = FredunLexer(ANTLRInputStream(input))
-	val tokens = CommonTokenStream(lexer);
-	val parser = FredunParser(tokens);
-	val tree = parser.start();
-	val walker = ParseTreeWalker();
-	walker.walk(FredunWalker(), tree);
-}
-
-class FredunWalker : ParseTreeListener {
-	override fun enterEveryRule(p0: ParserRuleContext?) {
-		println("Enter ${p0?.getStart()}")
+	if (args.size < 1) {
+		System.err?.println("Usage: ./frontend file.fn")
+		return
 	}
 
-	override fun exitEveryRule(p0: ParserRuleContext?) {
-		println("Exit ${p0?.getStart()}")
+	val file = File(args[0])
+	if (!file.exists()) {
+		System.err?.println("ERROR: File \"$file\" doesn't exist")
 	}
 
-	override fun visitErrorNode(p0: ErrorNode?) {
-		println("Error")
-	}
-
-	override fun visitTerminal(p0: TerminalNode?) {
-		println("Terminal ${p0?.symbol}")
-	}
+	val sexprs = SExprParser.parse(file)
+	println("(")
+	sexprs.forEach { println("\t$it") }
+	println(")")
 }

@@ -10,10 +10,20 @@ import com.fredun.frontend.sexpr.SExprExpr
 import com.fredun.frontend.sexpr.SExprLet
 import org.antlr.v4.runtime.ANTLRInputStream
 import org.antlr.v4.runtime.CommonTokenStream
+import java.io.File
+import java.io.FileReader
 
 object SExprParser {
 	fun parse(input: String): List<SExpr> {
-		val lexer = FredunLexer(ANTLRInputStream(input))
+		return parse(ANTLRInputStream(input))
+	}
+
+	fun parse(file: File): List<SExpr> {
+		return parse(ANTLRInputStream(FileReader(file)))
+	}
+
+	private fun parse(antlrInputStream: ANTLRInputStream): List<SExpr> {
+		val lexer = FredunLexer(antlrInputStream)
 		val tokens = CommonTokenStream(lexer);
 		val parser = FredunParser(tokens);
 
