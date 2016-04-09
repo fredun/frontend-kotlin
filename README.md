@@ -1,0 +1,1 @@
+# Fredun Frontend [![Circle CI](https://circleci.com/gh/fredun/frontend-kotlin.svg?style=svg)](https://circleci.com/gh/fredun/frontend-kotlin)
