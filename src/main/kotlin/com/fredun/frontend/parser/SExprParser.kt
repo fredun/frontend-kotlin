@@ -31,7 +31,9 @@ object SExprParser {
 	}
 
 	private fun toSExpr(start: FredunParser.StartContext): List<SExpr> {
-		return start.defs().map { toSExpr(it) }
+//		return start.defs().map { toSExpr(it) }
+		// FIXME: Remove this when backend can parse defs
+		return start.expr().map { toSExpr(it) }
 	}
 
 	private fun toSExpr(def: FredunParser.DefsContext): SExpr {

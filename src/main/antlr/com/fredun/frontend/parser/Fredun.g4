@@ -4,7 +4,9 @@ grammar Fredun;
 package com.fredun.frontend.parser;
 }
 
-start: (NEWLINE | defs)* ;
+//start: (NEWLINE | defs)* ;
+// FIXME: Remove this when backend can parse defs
+start: (NEWLINE | expr)* ;
 
 defs: (letDef | structDef | tupleDef) NEWLINE+ ;
 letDef: 'let' varName '=' expr ;
