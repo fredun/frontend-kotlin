@@ -18,24 +18,33 @@ tuple: '(' typeList ')' ;
 
 typeList: type (COMMA_AND_NL type)* ;
 
-number: UNSIGNED_INT | UNSIGNED_HEX | UNSIGNED_FLOAT;
+number:
+    UNSIGNED_INT        # intNumber
+    | UNSIGNED_HEX      # hexNumber
+    | UNSIGNED_FLOAT    # floatNumber
+    ;
 
 varName: LOWERCASE_ID;
 
-expr: block | '(' expr ')'
-    | expr '.' LOWERCASE_ID
-    | <assoc=right> expr POW expr          // powExpr
-    | op=(MINUS | PLUS) expr               // unaryExpr
-    | NOT expr                             // notExpr
-    | expr op=(MULT | DIV | MOD) expr      // multiplicationExpr
-    | expr op=(PLUS | MINUS) expr          // additiveExpr
-    | expr op=(LTEQ | GTEQ | LT | GT) expr // relationalExpr
-    | expr op=(EQ | NEQ) expr              // equalityExpr
-    | expr AND expr                        // andExpr
-    | expr OR expr                         // orExpr
-    | '(' argList ')' (':' type)? '=>' expr
-    | RETURN expr                          // return
-    | constant=(CHAR | QUOTED_STRING) | number | LOWERCASE_ID ;
+expr: block                                 # blockExpr
+    | '(' expr ')'                          # groupExpr
+    | expr '.' LOWERCASE_ID                 # dotExpr
+    | <assoc=right> expr POW expr           # powExpr
+    | op=(MINUS | PLUS) expr                # unaryExpr
+    | NOT expr                              # notExpr
+    | expr op=(MULT | DIV | MOD) expr       # multiplicationExpr
+    | expr op=(PLUS | MINUS) expr           # additiveExpr
+    | expr op=(LTEQ | GTEQ | LT | GT) expr  # relationalExpr
+    | expr op=(EQ | NEQ) expr               # equalityExpr
+    | expr AND expr                         # andExpr
+    | expr OR expr                          # orExpr
+    | '(' argList ')' (':' type)? '=>' expr # funcExpr
+    | RETURN expr                           # returnExpr
+    | number                                # numberExpr
+    | CHAR                                  # charExpr
+    | QUOTED_STRING                         # stringExpr
+    | LOWERCASE_ID                          # idExpr
+    ;
 
 block: '{' blockStatement* '}' NEWLINE+ ;
 
