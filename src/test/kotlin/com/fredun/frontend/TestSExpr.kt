@@ -4,7 +4,8 @@ import com.fredun.frontend.sexpr.SExprAbstraction
 import com.fredun.frontend.sexpr.SExprApplication
 import com.fredun.frontend.sexpr.SExprConstantBoolean
 import com.fredun.frontend.sexpr.SExprConstantChar
-import com.fredun.frontend.sexpr.SExprConstantNumber
+import com.fredun.frontend.sexpr.SExprConstantFloat
+import com.fredun.frontend.sexpr.SExprConstantInt
 import com.fredun.frontend.sexpr.SExprConstantString
 import com.fredun.frontend.sexpr.SExprLet
 import com.fredun.frontend.sexpr.SExprOperationBinary
@@ -25,13 +26,16 @@ class TestSExpr {
 
 	@Test
 	fun testConstant() {
-		SExprConstantNumber(42).apply {
+		SExprConstantInt(42).apply {
 			assertEquals("(constant (numeric 42))", this.toString())
 		}
-		SExprConstantNumber(42.6659).apply {
+		SExprConstantFloat(42.0).apply {
+			assertEquals("(constant (numeric 42.0))", this.toString())
+		}
+		SExprConstantFloat(42.6659).apply {
 			assertEquals("(constant (numeric 42.6659))", this.toString())
 		}
-		SExprConstantNumber(42e14).apply {
+		SExprConstantFloat(42e14).apply {
 			assertEquals("(constant (numeric 4.2E15))", this.toString())
 		}
 		SExprConstantChar('X').apply {
@@ -68,24 +72,24 @@ class TestSExpr {
 
 	@Test
 	fun testOperations() {
-		SExprOperationBinary("+", SExprConstantNumber(42), SExprConstantString("Universe")).apply {
+		SExprOperationBinary("+", SExprConstantInt(42), SExprConstantString("Universe")).apply {
 			assertEquals("(operation (binary \"+\" (constant (numeric 42)) (constant (string \"Universe\"))))", this.toString())
 		}
-		SExprOperationUnary("-", SExprConstantNumber(42)).apply {
+		SExprOperationUnary("-", SExprConstantInt(42)).apply {
 			assertEquals("(operation (unary \"-\" (constant (numeric 42))))", this.toString())
 		}
 	}
 
 	@Test
 	fun testTuple() {
-		SExprTuple(SExprConstantNumber(42), SExprConstantString("Universe")).apply {
+		SExprTuple(SExprConstantInt(42), SExprConstantString("Universe")).apply {
 			assertEquals("(tuple (constant (numeric 42)) (constant (string \"Universe\")))", this.toString())
 		}
 	}
 
 	@Test
 	fun testType() {
-		SExprType(SExprConstantNumber(42)).apply {
+		SExprType(SExprConstantInt(42)).apply {
 			assertEquals("(type (constant (numeric 42)))", this.toString())
 		}
 	}
@@ -93,8 +97,8 @@ class TestSExpr {
 	@Test
 	fun testEquals() {
 		assertEquals(
-				SExprOperationBinary("+", SExprConstantNumber(42), SExprConstantString("Universe")),
-				SExprOperationBinary("+", SExprConstantNumber(42), SExprConstantString("Universe"))
+				SExprOperationBinary("+", SExprConstantInt(42), SExprConstantString("Universe")),
+				SExprOperationBinary("+", SExprConstantInt(42), SExprConstantString("Universe"))
 		)
 	}
 }

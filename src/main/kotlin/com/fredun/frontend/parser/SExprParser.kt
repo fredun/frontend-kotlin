@@ -1,8 +1,10 @@
 package com.fredun.frontend.parser
 
 import com.fredun.frontend.sexpr.SExpr
+import com.fredun.frontend.sexpr.SExprConstant
 import com.fredun.frontend.sexpr.SExprConstantChar
-import com.fredun.frontend.sexpr.SExprConstantNumber
+import com.fredun.frontend.sexpr.SExprConstantFloat
+import com.fredun.frontend.sexpr.SExprConstantInt
 import com.fredun.frontend.sexpr.SExprConstantString
 import com.fredun.frontend.sexpr.SExprExpr
 import com.fredun.frontend.sexpr.SExprLet
@@ -43,11 +45,11 @@ object SExprParser {
 		}
 	}
 
-	private fun toSExpr(expr: FredunParser.NumberExprContext): SExprConstantNumber {
+	private fun toSExpr(expr: FredunParser.NumberExprContext): SExprConstant {
 		val number = expr.number()
 		return when (number) {
-			is FredunParser.IntNumberContext, is FredunParser.HexNumberContext -> SExprConstantNumber(java.lang.Long.valueOf(number.text))
-			is FredunParser.FloatNumberContext -> SExprConstantNumber(java.lang.Double.valueOf(number.text))
+			is FredunParser.IntNumberContext, is FredunParser.HexNumberContext -> SExprConstantInt(java.lang.Long.valueOf(number.text))
+			is FredunParser.FloatNumberContext -> SExprConstantFloat(java.lang.Double.valueOf(number.text))
 			else -> throw UnsupportedOperationException()
 		}
 	}
