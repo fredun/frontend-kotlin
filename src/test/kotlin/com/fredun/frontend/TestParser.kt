@@ -11,6 +11,7 @@ import com.fredun.frontend.sexpr.SExprFloatBits
 import com.fredun.frontend.sexpr.SExprIntegerBits
 import com.fredun.frontend.sexpr.SExprLet
 import com.fredun.frontend.sexpr.SExprOperationBinary
+import com.fredun.frontend.sexpr.SExprOperationUnary
 import com.fredun.frontend.sexpr.SExprVariable
 import org.junit.Assert.assertArrayEquals
 import org.junit.Ignore
@@ -90,6 +91,13 @@ class TestParser {
 		testSingle(SExprOperationBinary("<", SExprConstantInt(42, SExprIntegerBits.I32), SExprConstantString("Universe")), "42 < \"Universe\"")
 		testSingle(SExprOperationBinary(">=", SExprConstantInt(42, SExprIntegerBits.I32), SExprConstantString("Universe")), "42 >= \"Universe\"")
 		testSingle(SExprOperationBinary(">", SExprConstantInt(42, SExprIntegerBits.I32), SExprConstantString("Universe")), "42 > \"Universe\"")
+	}
+
+	@Test
+	fun testUnaryOperations() {
+		testSingle(SExprOperationUnary("+", SExprConstantInt(42, SExprIntegerBits.I32)), "+42")
+		testSingle(SExprOperationUnary("-", SExprConstantInt(42, SExprIntegerBits.I32)), "-42")
+		testSingle(SExprOperationUnary("!", SExprConstantInt(42, SExprIntegerBits.I32)), "!42")
 	}
 
 	private fun testSingle(expected: SExpr, input: String) {

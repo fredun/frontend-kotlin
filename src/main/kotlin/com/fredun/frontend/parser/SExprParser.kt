@@ -13,6 +13,7 @@ import com.fredun.frontend.sexpr.SExprFloatBits
 import com.fredun.frontend.sexpr.SExprIntegerBits
 import com.fredun.frontend.sexpr.SExprLet
 import com.fredun.frontend.sexpr.SExprOperationBinary
+import com.fredun.frontend.sexpr.SExprOperationUnary
 import com.fredun.frontend.sexpr.SExprVariable
 import org.antlr.v4.runtime.ANTLRInputStream
 import org.antlr.v4.runtime.CommonTokenStream
@@ -65,6 +66,8 @@ object SExprParser {
 			is FredunParser.AdditiveExprContext -> toSExpr(expr)
 			is FredunParser.RelationalExprContext -> toSExpr(expr)
 			is FredunParser.EqualityExprContext -> toSExpr(expr)
+			is FredunParser.UnaryExprContext -> toSExpr(expr)
+			is FredunParser.NotExprContext -> toSExpr(expr)
 			else -> throw UnsupportedOperationException(expr.javaClass.canonicalName)
 		}
 	}
@@ -146,5 +149,13 @@ object SExprParser {
 
 	private fun toSExpr(expr: FredunParser.EqualityExprContext): SExprOperationBinary {
 		return SExprOperationBinary(expr.op.text, toSExpr(expr.expr(0)), toSExpr(expr.expr(1)))
+	}
+
+	private fun toSExpr(expr: FredunParser.UnaryExprContext): SExprOperationUnary {
+		return SExprOperationUnary(expr.op.text, toSExpr(expr.expr()))
+	}
+
+	private fun toSExpr(expr: FredunParser.NotExprContext): SExprOperationUnary {
+		return SExprOperationUnary(expr.NOT().text, toSExpr(expr.expr()))
 	}
 }
