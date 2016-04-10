@@ -19,10 +19,7 @@ class TestParser {
 	@Test
 	@Ignore     // FIXME: Remove when backend can parse defs
 	fun testLet() {
-		val expected = arrayOf(SExprLet("myThing", SExprConstantInt(42, SExprIntegerBits.I32)))
-		val result = SExprParser.parse("let myThing = 42\n")
-
-		assertArrayEquals(expected, result.toTypedArray())
+		testSingle(SExprLet("myThing", SExprConstantInt(42, SExprIntegerBits.I32)), "let myThing = 42\n")
 	}
 
 	@Test
@@ -38,34 +35,15 @@ class TestParser {
 	}
 
 	@Test
+	// FIXME: everything in this test needs to be wrapped in a `def` after we add them back
 	fun testApplication() {
-		run {
-			// FIXME: This needs to be wrapped in a `def` after we add them back
-			val expected = arrayOf(
-					SExprApplication(SExprVariable("myFunc"))
-			)
-			val result = SExprParser.parse("myFunc()")
+		testSingle(SExprApplication(SExprVariable("myFunc")) ,"myFunc()")
+		testSingle(SExprApplication(SExprVariable("myFunc"), SExprConstantInt(42, SExprIntegerBits.I32)), "myFunc(42)")
 
-			assertArrayEquals(expected, result.toTypedArray())
-		}
-		run {
-			// FIXME: This needs to be wrapped in a `def` after we add them back
-			val expected = arrayOf(
-					SExprApplication(SExprVariable("myFunc"), SExprConstantInt(42, SExprIntegerBits.I32))
-			)
-			val result = SExprParser.parse("myFunc(42)")
-
-			assertArrayEquals(expected, result.toTypedArray())
-		}
-		run {
-			// FIXME: This needs to be wrapped in a `def` after we add them back
-			val expected = arrayOf(
-					SExprApplication(SExprVariable("myFunc"), SExprConstantString("Sparta!"), SExprConstantFloat(42.42, SExprFloatBits.F32))
-			)
-			val result = SExprParser.parse("myFunc(\"Sparta!\", 42.42)")
-
-			assertArrayEquals(expected, result.toTypedArray())
-		}
+		testSingle(
+				SExprApplication(SExprVariable("myFunc"), SExprConstantString("Sparta!"), SExprConstantFloat(42.42, SExprFloatBits.F32)),
+				"myFunc(\"Sparta!\", 42.42)"
+		)
 	}
 
 	@Test
