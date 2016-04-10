@@ -91,6 +91,9 @@ class TestParser {
 		testSingle(SExprOperationBinary("<", SExprConstantInt(42, SExprIntegerBits.I32), SExprConstantString("Universe")), "42 < \"Universe\"")
 		testSingle(SExprOperationBinary(">=", SExprConstantInt(42, SExprIntegerBits.I32), SExprConstantString("Universe")), "42 >= \"Universe\"")
 		testSingle(SExprOperationBinary(">", SExprConstantInt(42, SExprIntegerBits.I32), SExprConstantString("Universe")), "42 > \"Universe\"")
+
+		testSingle(SExprOperationBinary("&&", SExprConstantInt(42, SExprIntegerBits.I32), SExprConstantString("Universe")), "42 && \"Universe\"")
+		testSingle(SExprOperationBinary("||", SExprConstantInt(42, SExprIntegerBits.I32), SExprConstantString("Universe")), "42 || \"Universe\"")
 	}
 
 	@Test

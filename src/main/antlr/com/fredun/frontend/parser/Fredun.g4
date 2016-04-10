@@ -79,8 +79,8 @@ LT: '<';
 GT: '>';
 EQ: '==';
 NEQ: '!=';
-AND: '&';
-OR: '|';
+AND: '&&';
+OR: '||';
 
 RETURN: 'return' ;
 
