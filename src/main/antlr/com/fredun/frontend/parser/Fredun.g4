@@ -97,7 +97,7 @@ UNSIGNED_HEX: '0x' HEX+ SUFFIX_INT? ;
 
 UNSIGNED_FLOAT: (([0-9]+ '.' [0-9]* Exponent?) | ('.' [0-9]+ Exponent?) | ([0-9]+ Exponent)) SUFFIX_FLOAT? ;
 
-SUFFIX_INT: [iu] ('8'|'16'|'32'|'64') ;
+SUFFIX_INT: ([iu] ('8'|'16'|'32'|'64')) | SUFFIX_FLOAT ;
 SUFFIX_FLOAT: 'f' ('32'|'64') ;
 
 fragment

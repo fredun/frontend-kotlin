@@ -1,10 +1,12 @@
 package com.fredun.frontend
 
 import com.fredun.frontend.parser.SExprParser
+import com.fredun.frontend.sexpr.SExpr
 import com.fredun.frontend.sexpr.SExprApplication
 import com.fredun.frontend.sexpr.SExprConstantFloat
 import com.fredun.frontend.sexpr.SExprConstantInt
 import com.fredun.frontend.sexpr.SExprConstantString
+import com.fredun.frontend.sexpr.SExprConstantUnsigned
 import com.fredun.frontend.sexpr.SExprFloatBits
 import com.fredun.frontend.sexpr.SExprIntegerBits
 import com.fredun.frontend.sexpr.SExprLet
@@ -64,5 +66,33 @@ class TestParser {
 
 			assertArrayEquals(expected, result.toTypedArray())
 		}
+	}
+
+	@Test
+	fun testNumericIntegerSuffixes() {
+		testSingle(SExprConstantInt(42, SExprIntegerBits.I32), "42\n")
+
+		testSingle(SExprConstantInt(42, SExprIntegerBits.I8), "42i8\n")
+		testSingle(SExprConstantInt(42, SExprIntegerBits.I16), "42i16\n")
+		testSingle(SExprConstantInt(42, SExprIntegerBits.I32), "42i32\n")
+		testSingle(SExprConstantInt(42, SExprIntegerBits.I64), "42i64\n")
+
+		testSingle(SExprConstantUnsigned(42, SExprIntegerBits.I8), "42u8\n")
+		testSingle(SExprConstantUnsigned(42, SExprIntegerBits.I16), "42u16\n")
+		testSingle(SExprConstantUnsigned(42, SExprIntegerBits.I32), "42u32\n")
+		testSingle(SExprConstantUnsigned(42, SExprIntegerBits.I64), "42u64\n")
+	}
+
+	@Test
+	fun testNumericFloatSuffixes() {
+		testSingle(SExprConstantFloat(42.0, SExprFloatBits.F32), "42.0")
+		testSingle(SExprConstantFloat(42.0, SExprFloatBits.F64), "42f64")
+		testSingle(SExprConstantFloat(42.0, SExprFloatBits.F64), "42.0f64")
+		testSingle(SExprConstantFloat(42.0, SExprFloatBits.F64), "0x2Af64")
+	}
+
+	private fun testSingle(expected: SExpr, input: String) {
+		val result = SExprParser.parse(input)
+		assertArrayEquals(arrayOf(expected), result.toTypedArray())
 	}
 }
