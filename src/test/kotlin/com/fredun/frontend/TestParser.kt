@@ -10,6 +10,7 @@ import com.fredun.frontend.sexpr.SExprConstantUnsigned
 import com.fredun.frontend.sexpr.SExprFloatBits
 import com.fredun.frontend.sexpr.SExprIntegerBits
 import com.fredun.frontend.sexpr.SExprLet
+import com.fredun.frontend.sexpr.SExprOperationBinary
 import com.fredun.frontend.sexpr.SExprVariable
 import org.junit.Assert.assertArrayEquals
 import org.junit.Ignore
@@ -67,6 +68,28 @@ class TestParser {
 		testSingle(SExprConstantFloat(42.0, SExprFloatBits.F64), "42f64")
 		testSingle(SExprConstantFloat(42.0, SExprFloatBits.F64), "42.0f64")
 		testSingle(SExprConstantFloat(42.0, SExprFloatBits.F64), "0x2Af64")
+	}
+
+	@Test
+	fun testBinaryOperations() {
+		// Additive
+		testSingle(SExprOperationBinary("+", SExprConstantInt(42, SExprIntegerBits.I32), SExprConstantString("Universe")), "42 + \"Universe\"")
+		testSingle(SExprOperationBinary("-", SExprConstantInt(42, SExprIntegerBits.I32), SExprConstantString("Universe")), "42 - \"Universe\"")
+
+		// Multiplicative
+		testSingle(SExprOperationBinary("*", SExprConstantInt(42, SExprIntegerBits.I32), SExprConstantString("Universe")), "42 * \"Universe\"")
+		testSingle(SExprOperationBinary("/", SExprConstantInt(42, SExprIntegerBits.I32), SExprConstantString("Universe")), "42 / \"Universe\"")
+		testSingle(SExprOperationBinary("%", SExprConstantInt(42, SExprIntegerBits.I32), SExprConstantString("Universe")), "42 % \"Universe\"")
+
+		// Equality
+		testSingle(SExprOperationBinary("==", SExprConstantInt(42, SExprIntegerBits.I32), SExprConstantString("Universe")), "42 == \"Universe\"")
+		testSingle(SExprOperationBinary("!=", SExprConstantInt(42, SExprIntegerBits.I32), SExprConstantString("Universe")), "42 != \"Universe\"")
+
+		// Relative
+		testSingle(SExprOperationBinary("<=", SExprConstantInt(42, SExprIntegerBits.I32), SExprConstantString("Universe")), "42 <= \"Universe\"")
+		testSingle(SExprOperationBinary("<", SExprConstantInt(42, SExprIntegerBits.I32), SExprConstantString("Universe")), "42 < \"Universe\"")
+		testSingle(SExprOperationBinary(">=", SExprConstantInt(42, SExprIntegerBits.I32), SExprConstantString("Universe")), "42 >= \"Universe\"")
+		testSingle(SExprOperationBinary(">", SExprConstantInt(42, SExprIntegerBits.I32), SExprConstantString("Universe")), "42 > \"Universe\"")
 	}
 
 	private fun testSingle(expected: SExpr, input: String) {

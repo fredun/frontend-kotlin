@@ -12,6 +12,7 @@ import com.fredun.frontend.sexpr.SExprExpr
 import com.fredun.frontend.sexpr.SExprFloatBits
 import com.fredun.frontend.sexpr.SExprIntegerBits
 import com.fredun.frontend.sexpr.SExprLet
+import com.fredun.frontend.sexpr.SExprOperationBinary
 import com.fredun.frontend.sexpr.SExprVariable
 import org.antlr.v4.runtime.ANTLRInputStream
 import org.antlr.v4.runtime.CommonTokenStream
@@ -60,6 +61,10 @@ object SExprParser {
 			is FredunParser.CharExprContext -> toSExpr(expr)
 			is FredunParser.StringExprContext -> toSExpr(expr)
 			is FredunParser.FuncApplicationExprContext -> toSExpr(expr)
+			is FredunParser.MultiplicationExprContext -> toSExpr(expr)
+			is FredunParser.AdditiveExprContext -> toSExpr(expr)
+			is FredunParser.RelationalExprContext -> toSExpr(expr)
+			is FredunParser.EqualityExprContext -> toSExpr(expr)
 			else -> throw UnsupportedOperationException(expr.javaClass.canonicalName)
 		}
 	}
@@ -125,5 +130,21 @@ object SExprParser {
 		val func = exprs[0]
 		val args = exprs.drop(1).map { toSExpr(it) }
 		return SExprApplication(toSExpr(func), *args.toTypedArray())
+	}
+
+	private fun toSExpr(expr: FredunParser.MultiplicationExprContext): SExprOperationBinary {
+		return SExprOperationBinary(expr.op.text, toSExpr(expr.expr(0)), toSExpr(expr.expr(1)))
+	}
+
+	private fun toSExpr(expr: FredunParser.AdditiveExprContext): SExprOperationBinary {
+		return SExprOperationBinary(expr.op.text, toSExpr(expr.expr(0)), toSExpr(expr.expr(1)))
+	}
+
+	private fun toSExpr(expr: FredunParser.RelationalExprContext): SExprOperationBinary {
+		return SExprOperationBinary(expr.op.text, toSExpr(expr.expr(0)), toSExpr(expr.expr(1)))
+	}
+
+	private fun toSExpr(expr: FredunParser.EqualityExprContext): SExprOperationBinary {
+		return SExprOperationBinary(expr.op.text, toSExpr(expr.expr(0)), toSExpr(expr.expr(1)))
 	}
 }
