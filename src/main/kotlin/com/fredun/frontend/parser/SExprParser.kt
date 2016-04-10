@@ -68,6 +68,7 @@ object SExprParser {
 			is FredunParser.EqualityExprContext -> toSExpr(expr)
 			is FredunParser.AndExprContext -> toSExpr(expr)
 			is FredunParser.OrExprContext -> toSExpr(expr)
+			is FredunParser.PowExprContext -> toSExpr(expr)
 			is FredunParser.UnaryExprContext -> toSExpr(expr)
 			is FredunParser.NotExprContext -> toSExpr(expr)
 			else -> throw UnsupportedOperationException(expr.javaClass.canonicalName)
@@ -159,6 +160,10 @@ object SExprParser {
 
 	private fun toSExpr(expr: FredunParser.OrExprContext): SExprOperationBinary {
 		return SExprOperationBinary(expr.OR().text, toSExpr(expr.expr(0)), toSExpr(expr.expr(1)))
+	}
+
+	private fun toSExpr(expr: FredunParser.PowExprContext): SExprOperationBinary {
+		return SExprOperationBinary(expr.POW().text, toSExpr(expr.expr(0)), toSExpr(expr.expr(1)))
 	}
 
 	private fun toSExpr(expr: FredunParser.UnaryExprContext): SExprOperationUnary {
