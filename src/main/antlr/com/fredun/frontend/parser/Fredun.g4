@@ -9,10 +9,10 @@ package com.fredun.frontend.parser;
 start: (NEWLINE | expr)* ;
 
 defs: (letDef | structDef | tupleDef) NEWLINE+ ;
-letDef: 'let' varName '=' expr ;
+letDef: LET varName '=' expr ;
 
-structDef: 'struct' type NEWLINE? struct ;
-tupleDef: 'type' type '=' tuple ;
+structDef: STRUCT type NEWLINE? struct ;
+tupleDef: TYPE type '=' tuple ;
 struct: '{' NEWLINE* argDefList /*(COMMA_AND_NL spread)?*/ NEWLINE? '}' ;
 tuple: '(' typeList ')' ;
 
@@ -31,7 +31,7 @@ varName: LOWERCASE_ID;
 expr: block                                 # blockExpr
     | expr '(' (expr (COMMA expr)*)? ')'    # funcApplicationExpr
     | '(' expr ')'                          # groupExpr
-    | expr '.' LOWERCASE_ID                 # dotExpr
+    | expr DOT LOWERCASE_ID                 # dotExpr
     | <assoc=right> expr POW expr           # powExpr
     | op=(MINUS | PLUS) expr                # unaryExpr
     | NOT expr                              # notExpr
@@ -58,12 +58,13 @@ argDef: varName ':' type ;
 type: UPPERCASE_ID ; /*typeKind? ;
 typeKind: '[' type ']' ; */
 
-ifSingle: 'if' expr 'then' expr 'else' expr ;
-ifMulti: 'if' expr block ('else' block) ;
+ifSingle: IF expr THEN expr ELSE expr ;
+ifMulti: IF expr block (ELSE block) ;
 
 // Lexing
 
 COMMA: ',' ;
+DOT: '.' ;
 
 COMMA_AND_NL: COMMA NEWLINE* ;
 POW: '^';
@@ -82,7 +83,23 @@ NEQ: '!=';
 AND: '&&';
 OR: '||';
 
+ASSIGN: '=' ;
+
+L_CURLY: '{' ;
+R_CURLY: '}' ;
+L_PAREN: '(' ;
+R_PAREN: ')' ;
+COLON: ':' ;
+
+FAT_ARROW: '=>' ;
+
 RETURN: 'return' ;
+LET: 'let';
+STRUCT: 'struct';
+TYPE: 'type';
+IF: 'if';
+THEN: 'then';
+ELSE: 'else';
 
 fragment ESCAPED_QUOTE: '\\"';
 fragment ESCAPED_SINGLE_QUOTE: '\\\'' ;
@@ -114,3 +131,13 @@ BLOCK_COMMENT: '/*' .*? '*/' -> channel(HIDDEN) ;
 LINE_COMMENT: '//' ~[\r\n]* -> channel(HIDDEN) ;
 NEWLINE: ('\r\n'|'\n'|'\r') ;
 WS : [ \t]+ -> channel(HIDDEN) ; // skip spaces, tabs, newlines
+
+/** "catch all" rule for any char not matched in a token rule of your
+ *  grammar. Lexers in Intellij must return all tokens good and bad.
+ *  There must be a token to cover all characters, which makes sense for
+ *  an IDE. The parser however should not see these bad tokens because
+ *  it just confuses the issue. Hence, the hidden channel.
+ */
+ERRCHAR
+	:	.	-> channel(HIDDEN)
+	;

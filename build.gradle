@@ -1,4 +1,4 @@
-group 'com.fredun.frontend'
+group 'com.fredun'
 version '0.0.1-SNAPSHOT'
 
 buildscript {
@@ -22,6 +22,7 @@ repositories {
 apply plugin: 'kotlin'
 apply plugin: 'antlr'
 apply plugin: 'application'
+apply plugin: 'maven-publish'
 
 mainClassName = 'com.fredun.frontend.MainKt'
 
@@ -37,3 +38,18 @@ dependencies {
 compileKotlin.dependsOn generateGrammarSource
 compileTestKotlin.dependsOn generateTestGrammarSource
 
+task sourceJar(type: Jar) {
+	from sourceSets.main.allJava
+}
+
+publishing {
+	publications {
+		mavenJava(MavenPublication) {
+			from components.java
+
+			artifact sourceJar {
+				classifier "sources"
+			}
+		}
+	}
+}
